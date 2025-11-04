@@ -59,6 +59,7 @@ pipeline {
         stage('Health check') {
             steps {
                 sh '''
+                apk add --no-cache curl
                 echo "Waiting for container to start..."
                 sleep 5
                 echo "Checking response..."
