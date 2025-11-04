@@ -29,16 +29,21 @@ pipeline {
             }
         }
 
-        stage('Install Docker cli') {
+        stage('Install Docker cli and docker-compose cli') {
             steps {
-                echo "Installing Docker cli... (1st try)"
+                echo "Installing Docker cli and docker compose cli..."
                 sh '''
                     which docker || {
                         apt-get update
                         apt-get install -y docker.io
+                        apt-get install -y docker-compose-plugin
                     }
+                    echo "docker ver:"
                     docker version
+                    echo "docker compose ver:"
+                    docker compose version
                 '''
+
             }
         }
 
@@ -53,7 +58,14 @@ pipeline {
             }
         }
 
-        
+        stage('Test- run container on host') {
+            steps {
+                cd first_task_ynet/app
+                echo "runnning docker compose on host machine... (at least should be)"
+                docker compose down || true
+                docker compose up -d //do a --build instead of stage('Build') before?
+            }
+        }
 
     }
 }
