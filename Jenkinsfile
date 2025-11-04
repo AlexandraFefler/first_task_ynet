@@ -7,19 +7,18 @@ pipeline {
     }
 
     stages {
-        stage('Ensuring Docker access') {
-            steps {
-                echo 'Ensuring Docker access...'
-                sh '''
-                    if ! docker info > /dev/null 2>&1; then
-                        echo "Docker daemon not accessible. Ensure the Jenkins user is in the Docker group."
-                        // exit 1
-                    else
-                        echo "Docker is accessible."
-                    fi
-                '''
-            }
-        }
+        // stage('Ensuring Docker access') {
+        //     steps {
+        //         echo 'Ensuring Docker access...'
+        //         sh '''
+        //             if ! docker info > /dev/null 2>&1; then
+        //                 echo "Docker daemon not accessible. Ensure the Jenkins user is in the Docker group."
+        //                 exit 1
+        //             else
+        //                 echo "Docker is accessible."
+        //             fi
+        //         '''
+        //     }
 
         stage('Cleanup') {
             steps {
@@ -34,5 +33,8 @@ pipeline {
                 '''
             }
         }
+
+        }
+
     }
 }
