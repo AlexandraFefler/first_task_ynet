@@ -36,12 +36,12 @@ pipeline {
                     which docker || {
                         apt-get update
                         apt-get install -y docker.io
-                        apt-get install -y docker-compose-plugin
                     }
+                    apt-get install -y docker-compose-plugin
                     echo "docker ver:"
                     docker version
                     echo "docker compose ver:"
-                    docker-compose version
+                    docker compose version
                 '''
 
             }
