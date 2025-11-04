@@ -41,7 +41,7 @@ pipeline {
                     echo "docker ver:"
                     docker version
                     echo "docker compose ver:"
-                    docker compose version
+                    docker-compose version
                 '''
 
             }
