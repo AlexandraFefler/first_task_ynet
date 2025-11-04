@@ -63,11 +63,15 @@ pipeline {
                 echo "Waiting for container to start..."
                 sleep 5
                 echo "Checking response..."
-                curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000 | grep 200
+                if curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000 | grep 200; then
+                echo "Test passed: App is responding with HTTP 200."
+                else
+                    echo "Test failed: App is not responding with HTTP 200."
+                    exit 1
+                fi
                 '''
             }
-        }
-
+        } //was just a -> curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000 | grep 200. Wrapped it in the same way in final project
 
     }
 }
