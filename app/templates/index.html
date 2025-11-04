@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>כותרות מ־Ynet</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+    h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { padding: .5rem .75rem; border: 1px solid #ddd; border-radius: .5rem; margin-bottom: .5rem; }
+    a { text-decoration: none; }
+    small { color: #666; display: block; margin-top: .25rem; }
+    .muted { color: #777; }
+  </style>
+</head>
+<body>
+  <h1>כותרות אחרונות מ־Ynet</h1>
+  <div id="status" class="muted">טוען…</div>
+  <ul id="list"></ul>
+
+  <script>
+    async function loadTitles() {
+      const status = document.getElementById("status");
+      const list = document.getElementById("list");
+      try {
+        const res = await fetch("/rss");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        status.textContent = "";
+        list.innerHTML = "";
+        data.items.forEach(item => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = item.link || "#";
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.textContent = item.title;
+          li.appendChild(a);
+          if (item.pubDate) {
+            const sm = document.createElement("small");
+            sm.textContent = item.pubDate;
+            li.appendChild(sm);
+          }
+          list.appendChild(li);
+        });
+        if (!data.items?.length) {
+          status.textContent = "לא נמצאו פריטים.";
+        }
+      } catch (err) {
+        status.textContent = "שגיאה בטעינה: " + err.message;
+      }
+    }
+    loadTitles();
+  </script>
+</body>
+</html>

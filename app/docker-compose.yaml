@@ -1,0 +1,23 @@
+services:
+  web:
+    image: sashafefler/ynet1:latest
+    container_name: ynet1_web
+    ports:
+      - "5000:5000"
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: ynet1_prom
+    ports:
+      - "9090:9090"
+    depends_on:
+      - web
+
+  grafana:
+    image: grafana/grafana
+    container_name: ynet1_grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - web
+      - prometheus
