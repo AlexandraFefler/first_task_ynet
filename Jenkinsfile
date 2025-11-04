@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'docker:27-cli'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
+            args '-v /var/run/docker.sock:/var/run/docker.sock --add-host=host.docker.internal:host-gateway'
         }
     }
 
@@ -63,7 +63,7 @@ pipeline {
                 echo "Waiting for container to start..."
                 sleep 5
                 echo "Checking response..."
-                curl -s -o /dev/null -w "%{http_code}" http://localhost:5000 | grep 200
+                curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000 | grep 200
                 '''
             }
         }
