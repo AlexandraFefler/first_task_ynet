@@ -29,6 +29,19 @@ pipeline {
             }
         }
 
+        stage('Install Docker cli') {
+            steps {
+                echo "Installing Docker cli... (1st try)"
+                sh '''
+                    which docker || {
+                        apt-get update
+                        apt-get install -y docker.io
+                    }
+                    docker version
+                '''
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Building Docker image...'
@@ -40,11 +53,7 @@ pipeline {
             }
         }
 
-        stage('Install Docker cli') {
-            steps {
-                echo "Installing Docker cli... (not yet)"
-            }
-        }
+        
 
     }
 }
