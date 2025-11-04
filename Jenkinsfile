@@ -2,23 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = 'sashafefler' // Your Docker Hub username
-        DOCKER_PASSWORD = credentials('DH-token') // Docker Hub token stored in Jenkins credentials
+        DOCKER_USERNAME = 'sashafefler'
+        DOCKER_PASSWORD = credentials('DH-token') // Docker Hub token stored in Jenkins credentials as secret text
     }
 
     stages {
-        // stage('Ensuring Docker access') {
-        //     steps {
-        //         echo 'Ensuring Docker access...'
-        //         sh '''
-        //             if ! docker info > /dev/null 2>&1; then
-        //                 echo "Docker daemon not accessible. Ensure the Jenkins user is in the Docker group."
-        //                 exit 1
-        //             else
-        //                 echo "Docker is accessible."
-        //             fi
-        //         '''
-        //     }
 
         stage('Cleanup') {
             steps {
@@ -31,6 +19,30 @@ pipeline {
                         echo "Directory does not exist, no cleanup needed."
                     fi
                 '''
+            }
+        }
+
+        stage('Clone') {
+            steps {
+                echo 'Cloning git repo...'
+                sh 'git clone https://github.com/AlexandraFefler/first_task_ynet.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building Docker image...'
+                sh '''
+                    cd first_task_ynet
+                    docker build -t sashafefler/first_task_ynet:latest .
+                    echo "Built Docker image with tag sashafefler/first_task_ynet:latest"
+                '''
+            }
+        }
+
+        stage('Install Docker cli') {
+            steps {
+                echo "Installing Docker cli... (not yet)"
             }
         }
 
