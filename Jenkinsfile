@@ -60,10 +60,12 @@ pipeline {
 
         stage('Test- run container on host') {
             steps {
-                cd first_task_ynet/app
-                echo "runnning docker compose on host machine... (at least should be)"
-                docker compose down || true
-                docker compose up -d //do a --build instead of stage('Build') before?
+                sh '''
+                    cd first_task_ynet/app
+                    echo "runnning docker compose on host machine... (at least should be)"
+                    docker compose down || true
+                    docker compose up -d 
+                ''' //do a --build instead of stage('Build') before?
             }
         }
 
