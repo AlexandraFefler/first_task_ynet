@@ -46,7 +46,7 @@ pipeline {
             steps {
                 echo 'Building Docker image...'
                 sh '''
-                    cd first_task_ynet
+                    cd first_task_ynet/app
                     docker build -t sashafefler/first_task_ynet:latest .
                     echo "Built Docker image with tag sashafefler/first_task_ynet:latest"
                 '''
