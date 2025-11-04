@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:27-cli'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
     environment {
         DOCKER_USERNAME = 'sashafefler'
@@ -26,24 +31,6 @@ pipeline {
             steps {
                 echo 'Cloning git repo...'
                 sh 'git clone https://github.com/AlexandraFefler/first_task_ynet.git'
-            }
-        }
-
-        stage('Install Docker cli and docker-compose cli') {
-            steps {
-                echo "Installing Docker cli and docker compose cli..."
-                sh '''
-                    which docker || {
-                        apt-get update
-                        apt-get install -y docker.io
-                    }
-                    apt-get install -y docker-compose-plugin
-                    echo "docker ver:"
-                    docker version
-                    echo "docker compose ver:"
-                    docker compose version
-                '''
-
             }
         }
 
