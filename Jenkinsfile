@@ -95,6 +95,40 @@ pipeline {
         stage('Connect to prod') {
             steps {
                 echo "connecting to vm on host..."
+                withCredentials([sshUserPrivateKey(credentialsId: 'vm-ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                    dir('first_task_ynet/app') {
+                        sh '''
+                            scp -o StrictHostKeyChecking=no -i "$SSH_KEY" docker-compose.yaml $SSH_USER@$VM_HOST:/home/$SSH_USER/ynet/
+
+                            # install docker & compose if missing, login, pull & run
+                            ssh -o StrictHostKeyChecking=no -i "$SSH_KEY" $SSH_USER@$VM_HOST <<'EOF'
+                                set -e
+                                # Install Docker CE + compose plugin (Ubuntu/Debian)
+                                if ! command -v docker >/dev/null 2>&1; then
+                                    sudo apt-get update
+                                    sudo apt-get install -y ca-certificates curl gnupg
+                                    sudo install -m 0755 -d /etc/apt/keyrings
+                                    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+                                    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+                                    echo \
+                                    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+                                    $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+                                    sudo apt-get update
+                                    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                                fi
+
+                                # Login to Docker Hub (uses short-lived token via stdin)
+                                echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+                                cd ~/ynet
+                                # ensure compose file points to your image tag or latest
+                                docker compose pull
+                                docker compose up -d
+                                docker compose ps
+                            EOF
+                        '''
+                    }
+                }
                 //connect via ssh (using jenkins credential) to a running, preconfigured vm for now 
                 //then clone the same git repo? nah maybe do it right and use dockerhub 
             }
