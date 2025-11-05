@@ -9,9 +9,24 @@ pipeline {
     environment {
         DOCKER_USERNAME = 'sashafefler'
         DOCKER_PASSWORD = credentials('DH-token') // Docker Hub token stored in Jenkins credentials as secret text
+        DOCKER_IMAGE = 'sashafefler/first_task_ynet'
+        VM_HOST = '192.168.1.20'
+        VM_USER = 'jenkinsuser'
     }
 
     stages {
+
+        stage ('Docker Hub auth') {
+            steps {
+                echo 'Docker hub authentication running...'
+                sh '''
+                    set -x # Log commands
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                    echo 'checking success. Logged in as:'
+                    docker info | grep username
+                '''
+            }
+        }
 
         stage('Cleanup') {
             steps {
@@ -41,11 +56,14 @@ pipeline {
                     cd first_task_ynet/app
                     docker build -t sashafefler/first_task_ynet:latest .
                     echo "Built Docker image with tag sashafefler/first_task_ynet:latest"
+                    docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+                    echo "logged in DH"
+                    docker push $DOCKER_IMAGE:latest
                 '''
             }
         }
 
-        stage('Test- run container on host') {
+        stage('Test - run container on host') {
             steps {
                 sh '''
                     cd first_task_ynet/app
@@ -64,14 +82,22 @@ pipeline {
                 sleep 5
                 echo "Checking response..."
                 if curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000 | grep 200; then
-                echo "Test passed: App is responding with HTTP 200."
+                echo "Test passed: App is responding with HTTP 200"
                 else
-                    echo "Test failed: App is not responding with HTTP 200."
+                    echo "Test failed: App is not responding with HTTP 200"
                     exit 1
                 fi
                 '''
             }
         } //was just a -> curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5000 | grep 200. Wrapped it in the same way in final project
+
+        stage('Connect to prod') {
+            steps {
+                echo "connecting to vm on host..."
+                //connect via ssh (using jenkins credential) to a running, preconfigured vm for now 
+                //then clone the same git repo? nah maybe do it right and use dockerhub 
+            }
+        }
 
     }
 }
