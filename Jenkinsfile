@@ -22,11 +22,12 @@ pipeline {
                 sh '''
                     set -x # Log commands
                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                    echo 'checking success. Logged in as:'
-                    docker info | grep username
                 '''
-            }
+            } 
         }
+
+        // echo 'checking success. Logged in as:'
+        // docker info | grep username
 
         stage('Cleanup') {
             steps {
