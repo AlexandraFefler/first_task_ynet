@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'docker:27-cli'
+            image 'docker:27-dind'//was -cli instead, dind has more features including curl 
             args '-v /var/run/docker.sock:/var/run/docker.sock --add-host=host.docker.internal:host-gateway'
         }
     }
@@ -75,10 +75,10 @@ pipeline {
             }
         }
 
+        // had a real quick <apk add --no-cache curl>- but started hanging in the middle of the pipeline 
         stage('Health check') {
             steps {
                 sh '''
-                apk add --no-cache curl
                 echo "Waiting for container to start..."
                 sleep 5
                 echo "Checking response..."
