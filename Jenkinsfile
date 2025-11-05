@@ -95,7 +95,7 @@ pipeline {
         stage('Connect to prod') {
             steps {
                 echo "connecting to vm on host..."
-                withCredentials([sshUserPrivateKey(credentialsId: 'ynet-vm-ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'prod-vm-ssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                     dir('first_task_ynet/app') {
                         sh '''
                             scp -o StrictHostKeyChecking=no -i "$SSH_KEY" docker-compose.yaml $SSH_USER@$VM_HOST:/home/$SSH_USER/ynet/
